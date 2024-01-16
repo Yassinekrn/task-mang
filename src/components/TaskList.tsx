@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, FC } from "react";
 
 import Task from "./Task";
 import { Task as TaskType } from "../lib/definitions";
 import TaskForm from "./TaskForm";
 import { Divider, Modal, Button, notification } from "antd";
 
-export default function TaskList() {
+type TaskListProps = {};
+
+const TaskList: FC<TaskListProps> = () => {
     const [tasks, setTasks] = useState<TaskType[]>([]);
     // state to store the id of the task to be deleted
     const [deletionId, setDeletionId] = useState<string>("");
@@ -58,6 +60,7 @@ export default function TaskList() {
         }
         setTasks([...tasks, task]);
         openSuccessNotification();
+        return;
     };
 
     const updateTask = (id: string) => {
@@ -141,4 +144,6 @@ export default function TaskList() {
             </div>
         </div>
     );
-}
+};
+
+export default TaskList;

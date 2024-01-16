@@ -1,4 +1,4 @@
-import React from "react";
+import React, { FC } from "react";
 
 import { Card, Button, Tooltip } from "antd";
 import {
@@ -7,14 +7,23 @@ import {
     DeleteOutlined,
 } from "@ant-design/icons";
 
-export default function Task({
+type TaskProps = {
+    id: string;
+    title?: string;
+    description?: string;
+    status: "done" | "in-progress";
+    updateTask: (id: string) => void;
+    deleteTask: (id: string) => void;
+};
+
+const Task: FC<TaskProps> = ({
     id,
     title,
     description,
     status,
     updateTask,
     deleteTask,
-}) {
+}) => {
     return (
         <Card
             hoverable
@@ -48,7 +57,7 @@ export default function Task({
                             onClick={() => {
                                 updateTask(id);
                             }}
-                            disabled={status === "done"}
+                            disabled={true}
                             icon={<CheckCircleOutlined />}
                             style={{
                                 backgroundColor: "#5eb008",
@@ -63,7 +72,7 @@ export default function Task({
                             onClick={() => {
                                 updateTask(id);
                             }}
-                            disabled={status === "done"}
+                            disabled={false}
                             icon={<ClockCircleOutlined />}
                             style={{
                                 backgroundColor: "orange",
@@ -89,4 +98,6 @@ export default function Task({
             </ul>
         </Card>
     );
-}
+};
+
+export default Task;

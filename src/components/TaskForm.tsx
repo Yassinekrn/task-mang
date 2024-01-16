@@ -1,22 +1,10 @@
-import React, { useRef, useState } from "react";
+import React, { FC } from "react";
 import { Task as TaskType, FieldType } from "../lib/definitions";
-import {
-    Input,
-    Button,
-    message,
-    Tooltip,
-    MenuProps,
-    notification,
-    Select,
-    Form,
-} from "antd";
+import { Input, Button, Tooltip, notification, Select, Form } from "antd";
 import {
     EditOutlined,
     CopyOutlined,
-    CheckCircleOutlined,
-    ClockCircleOutlined,
     PlusCircleOutlined,
-    CheckCircleTwoTone,
     InfoCircleOutlined,
 } from "@ant-design/icons";
 
@@ -24,13 +12,13 @@ import {
 // const { TextArea } = Input;
 const { Option } = Select;
 
-export default function TaskForm({ addTask }) {
+type TaskFormProps = {
+    addTask: (task: TaskType) => void;
+};
+
+const TaskForm: FC<TaskFormProps> = ({ addTask }) => {
     const [form] = Form.useForm();
     // states to handle the form inputs, now useless since I'm using the form from antd
-    // TODO: remove them
-    const [title, setTitle] = useState<string>("");
-    const [description, setDescription] = useState<string>("");
-    const [status, setStatus] = useState<"done" | "in-progress">("in-progress");
 
     const [api, contextHolder] = notification.useNotification();
 
@@ -47,21 +35,13 @@ export default function TaskForm({ addTask }) {
                     : "in-progress",
         };
         addTask(newTask);
-        setTitle("");
-        setDescription("");
-        setStatus("in-progress");
+
+        form.resetFields();
     };
 
     const onFinishFailed = (errorInfo: any) => {
         // error with the form submission
         console.log("Failed:", errorInfo);
-    };
-
-    const handleMenuClick: MenuProps["onClick"] = (e) => {
-        message.info("option selected");
-        console.log("click", parseInt(e.key));
-        const chosenStatus = parseInt(e.key) === 1 ? "done" : "in-progress";
-        setStatus(chosenStatus);
     };
 
     const onStatusChange = (value: string) => {
@@ -70,10 +50,10 @@ export default function TaskForm({ addTask }) {
                 form.setFieldsValue({ status: "done" });
                 break;
             case "in-progress":
-                form.setFieldsValue({ note: "in-progress" });
+                form.setFieldsValue({ status: "in-progress" });
                 break;
             case "other":
-                form.setFieldsValue({ note: "in-progress" });
+                form.setFieldsValue({ status: "in-progress" });
                 break;
             default:
         }
@@ -85,6 +65,7 @@ export default function TaskForm({ addTask }) {
             <h2 className="text-2xl font-semibold mb-4">Task Form</h2>
 
             <Form
+                form={form} // Connect the form instance to the Form component
                 name="basic"
                 initialValues={{ remember: true }}
                 onFinish={onFinish}
@@ -92,7 +73,7 @@ export default function TaskForm({ addTask }) {
                 autoComplete="off"
                 className="space-y-4"
             >
-                <Form.Item<FieldType>
+                <Form.Item
                     label="Title"
                     name="title"
                     rules={[
@@ -103,8 +84,6 @@ export default function TaskForm({ addTask }) {
                     ]}
                 >
                     <Input
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
                         required
                         type="text"
                         placeholder="Input the title of your task"
@@ -119,7 +98,7 @@ export default function TaskForm({ addTask }) {
                         }
                     />
                 </Form.Item>
-                <Form.Item<FieldType>
+                <Form.Item
                     label="Desc"
                     name="description"
                     rules={[
@@ -131,8 +110,6 @@ export default function TaskForm({ addTask }) {
                     ]}
                 >
                     <Input
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
                         required
                         type="text"
                         placeholder="Add a description to your task"
@@ -165,4 +142,6 @@ export default function TaskForm({ addTask }) {
             </Form>
         </div>
     );
-}
+};
+
+export default TaskForm;
