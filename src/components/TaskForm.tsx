@@ -1,15 +1,11 @@
 import React, { useRef, useState } from "react";
-import { Task as TaskType } from "../lib/definitions";
+import { Task as TaskType, FieldType } from "../lib/definitions";
 import {
     Input,
-    InputRef,
     Button,
-    Dropdown,
     message,
-    Space,
     Tooltip,
     MenuProps,
-    Alert,
     notification,
     Select,
     Form,
@@ -17,8 +13,6 @@ import {
 import {
     EditOutlined,
     CopyOutlined,
-    UserOutlined,
-    DownOutlined,
     CheckCircleOutlined,
     ClockCircleOutlined,
     PlusCircleOutlined,
@@ -26,11 +20,14 @@ import {
     InfoCircleOutlined,
 } from "@ant-design/icons";
 
-const { TextArea } = Input;
+// could use TextArea instead of Input but I decided not to to keep using the icon prefix
+// const { TextArea } = Input;
 const { Option } = Select;
 
 export default function TaskForm({ addTask }) {
     const [form] = Form.useForm();
+    // states to handle the form inputs, now useless since I'm using the form from antd
+    // TODO: remove them
     const [title, setTitle] = useState<string>("");
     const [description, setDescription] = useState<string>("");
     const [status, setStatus] = useState<"done" | "in-progress">("in-progress");
@@ -38,7 +35,7 @@ export default function TaskForm({ addTask }) {
     const [api, contextHolder] = notification.useNotification();
 
     const onFinish = (values: any) => {
-        console.log("Success:", values);
+        // console.log("Success:", values); // values is an object containing the values of the form
 
         const newTask: TaskType = {
             id: new Date().getTime().toString(),
@@ -53,52 +50,18 @@ export default function TaskForm({ addTask }) {
         setTitle("");
         setDescription("");
         setStatus("in-progress");
-
-        //openNotification();
     };
 
     const onFinishFailed = (errorInfo: any) => {
+        // error with the form submission
         console.log("Failed:", errorInfo);
     };
-
-    type FieldType = {
-        title?: string;
-        description?: string;
-        status?: string;
-    };
-
-    const openNotification = () => {
-        api.open({
-            message: "task added ✅",
-            description:
-                "- your task has been added successfully, you can check it in the list below",
-            duration: 3,
-        });
-    };
-
-    const items: MenuProps["items"] = [
-        {
-            label: "done",
-            key: "1",
-            icon: <CheckCircleOutlined />,
-        },
-        {
-            label: "in-progress",
-            key: "2",
-            icon: <ClockCircleOutlined />,
-        },
-    ];
 
     const handleMenuClick: MenuProps["onClick"] = (e) => {
         message.info("option selected");
         console.log("click", parseInt(e.key));
         const chosenStatus = parseInt(e.key) === 1 ? "done" : "in-progress";
         setStatus(chosenStatus);
-    };
-
-    const menuProps = {
-        items,
-        onClick: handleMenuClick,
     };
 
     const onStatusChange = (value: string) => {
@@ -116,23 +79,6 @@ export default function TaskForm({ addTask }) {
         }
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-
-        const newTask: TaskType = {
-            id: new Date().getTime().toString(),
-            title: title || "",
-            description: description || "",
-            status:
-                status === "in-progress" || status === "done"
-                    ? status
-                    : "in-progress",
-        };
-        addTask(newTask);
-        setTitle("");
-        setDescription("");
-        setStatus("in-progress");
-    };
     return (
         <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-md shadow-md">
             {contextHolder}
@@ -140,9 +86,6 @@ export default function TaskForm({ addTask }) {
 
             <Form
                 name="basic"
-                //labelCol={{ span: 8 }}
-                //wrapperCol={{ span: 16 }}
-                //style={{ maxWidth: 600 }}
                 initialValues={{ remember: true }}
                 onFinish={onFinish}
                 onFinishFailed={onFinishFailed}
@@ -202,14 +145,6 @@ export default function TaskForm({ addTask }) {
                     label="Stat"
                     rules={[{ required: true }]}
                 >
-                    {/* <Dropdown menu={menuProps}>
-                        <Button className="w-full">
-                            <Space>
-                                <span>{status} is selected</span>
-                                <DownOutlined />
-                            </Space>
-                        </Button>
-                    </Dropdown> */}
                     <Select
                         placeholder="Select a status for your task"
                         onChange={onStatusChange}
@@ -222,10 +157,6 @@ export default function TaskForm({ addTask }) {
                 <Button
                     icon={<PlusCircleOutlined />}
                     htmlType="submit"
-                    // onClick={(e) => {
-                    //     handleSubmit(e);
-                    //     openNotification();
-                    // }}
                     style={{ backgroundColor: "#1677ff", color: "white" }}
                     className="w-full"
                 >

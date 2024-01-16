@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+
 import Task from "./Task";
 import { Task as TaskType } from "../lib/definitions";
 import TaskForm from "./TaskForm";
@@ -6,9 +7,11 @@ import { Divider, Modal, Button, notification } from "antd";
 
 export default function TaskList() {
     const [tasks, setTasks] = useState<TaskType[]>([]);
-    const [delId, setDelId] = useState<string>("");
+    // state to store the id of the task to be deleted
+    const [deletionId, setDeletionId] = useState<string>("");
+    // state for the notification ( antd )
     const [api, contextHolder] = notification.useNotification();
-    console.log(tasks);
+
     useEffect(() => {
         const fetchedTasks: TaskType[] = [
             {
@@ -25,6 +28,7 @@ export default function TaskList() {
                 status: "done",
             },
         ];
+        // fetch tasks from the server (node backend)
         // async function fetchTasks() {
         //     fetch("http://localhost:3000/tasks").then((response) => {
         //         response.json().then((data) => {
@@ -36,7 +40,7 @@ export default function TaskList() {
         setTasks(fetchedTasks);
     }, []);
 
-    const openNotification = () => {
+    const openSuccessNotification = () => {
         api.open({
             message: "task added ✅",
             description:
@@ -49,11 +53,11 @@ export default function TaskList() {
         // chekcing if the task already exists, if so, return
         const exists = tasks.find((t) => t.title === task.title);
         if (exists) {
-            openNotification1();
+            openErrorNotification();
             return;
         }
         setTasks([...tasks, task]);
-        openNotification();
+        openSuccessNotification();
     };
 
     const updateTask = (id: string) => {
@@ -70,7 +74,7 @@ export default function TaskList() {
     };
 
     const deleteTask = (id: string) => {
-        setDelId(id);
+        setDeletionId(id);
         showModal();
         // const newTasks: TaskType[] = tasks.filter((task) => task.id !== id);
         // setTasks(newTasks);
@@ -83,17 +87,20 @@ export default function TaskList() {
     };
 
     const handleOk = () => {
-        const newTasks: TaskType[] = tasks.filter((task) => task.id !== delId);
+        // confirm button is clicked
+        const newTasks: TaskType[] = tasks.filter(
+            (task) => task.id !== deletionId
+        );
         setTasks(newTasks);
         setIsModalOpen(false);
     };
 
     const handleCancel = () => {
-        setDelId("");
+        setDeletionId("");
         setIsModalOpen(false);
     };
 
-    const openNotification1 = () => {
+    const openErrorNotification = () => {
         api.open({
             message: "task already exists ❌",
             description:
@@ -105,7 +112,7 @@ export default function TaskList() {
     return (
         <div>
             <Divider>Add a new Task</Divider>
-            {contextHolder}
+            {contextHolder} {/* notification for the creation */}
             <TaskForm addTask={addTask} />
             <Divider>Manage your tasks</Divider>
             <div className="flex justify-center content-center flex-wrap gap-5">

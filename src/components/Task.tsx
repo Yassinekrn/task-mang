@@ -1,5 +1,5 @@
 import React from "react";
-import { Task as TaskType } from "../lib/definitions";
+
 import { Card, Button, Tooltip } from "antd";
 import {
     CheckCircleOutlined,
@@ -29,7 +29,7 @@ export default function Task({
                         }}
                     >
                         <DeleteOutlined
-                            style={{ transform: "translateY(-4px)" }}
+                            style={{ transform: "translateY(-4px)" }} // align icon in the middle
                         />
                     </Button>
                     {"   "}
@@ -40,7 +40,7 @@ export default function Task({
                 </>
             }
             bordered={false}
-            style={{ width: 350 }}
+            style={{ width: "350px" }}
             extra={
                 status == "done" ? (
                     <Tooltip title={status}>
@@ -87,7 +87,6 @@ export default function Task({
                     )}
                 </li>
             </ul>
-            <div className="text-center "></div>
         </Card>
     );
 }
