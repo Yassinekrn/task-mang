@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import Task from "./Task";
 import { Task as TaskType } from "../lib/definitions";
 import TaskForm from "./TaskForm";
-import { Divider, Modal, Button } from "antd";
+import { Divider, Modal, Button, notification } from "antd";
 
 export default function TaskList() {
     const [tasks, setTasks] = useState<TaskType[]>([]);
     const [delId, setDelId] = useState<string>("");
+    const [api, contextHolder] = notification.useNotification();
     console.log(tasks);
     useEffect(() => {
         const fetchedTasks: TaskType[] = [
@@ -35,8 +36,24 @@ export default function TaskList() {
         setTasks(fetchedTasks);
     }, []);
 
+    const openNotification = () => {
+        api.open({
+            message: "task added ✅",
+            description:
+                "- your task has been added successfully, you can check it in the list below",
+            duration: 3,
+        });
+    };
+
     const addTask = (task: TaskType) => {
+        // chekcing if the task already exists, if so, return
+        const exists = tasks.find((t) => t.title === task.title);
+        if (exists) {
+            openNotification1();
+            return;
+        }
         setTasks([...tasks, task]);
+        openNotification();
     };
 
     const updateTask = (id: string) => {
@@ -76,9 +93,19 @@ export default function TaskList() {
         setIsModalOpen(false);
     };
 
+    const openNotification1 = () => {
+        api.open({
+            message: "task already exists ❌",
+            description:
+                "- your task already exists, please check the list below",
+            duration: 3,
+        });
+    };
+
     return (
         <div>
             <Divider>Add a new Task</Divider>
+            {contextHolder}
             <TaskForm addTask={addTask} />
             <Divider>Manage your tasks</Divider>
             <div className="flex justify-center content-center flex-wrap gap-5">

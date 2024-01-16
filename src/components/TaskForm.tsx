@@ -54,7 +54,7 @@ export default function TaskForm({ addTask }) {
         setDescription("");
         setStatus("in-progress");
 
-        openNotification();
+        //openNotification();
     };
 
     const onFinishFailed = (errorInfo: any) => {
